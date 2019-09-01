@@ -1,4 +1,4 @@
-package com.ecristobale.moviecatalogservice.model;
+package com.ecristobale.moviecatalogservice.models;
 
 public class CatalogItem {
 
