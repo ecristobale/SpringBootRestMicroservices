@@ -17,6 +17,9 @@ import com.ecristobale.moviecatalogservice.models.UserRating;
 @RestController
 @RequestMapping("/catalog")
 public class MovieCatalogResource {
+
+	private String EUREKA_RATINGS_NAME = "ratings-data-service";
+	private String EUREKA_MOVIE_INFO_NAME = "movie-info-service";
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -29,11 +32,11 @@ public class MovieCatalogResource {
 		CatalogItemWrapper catalogItemWrapper = new CatalogItemWrapper();
 		
 		//get all rated movie IDs
-		UserRating ratings = restTemplate.getForObject("http://localhost:8083/ratingsdata/users/foo", UserRating.class);
+		UserRating ratings = restTemplate.getForObject("http://".concat(EUREKA_RATINGS_NAME).concat("/ratingsdata/users/foo"), UserRating.class);
 		
 		catalogItemWrapper.setCatalogItem(ratings.getUserRating().stream().map(rating -> {
 			//for each movie ID, call movie info service and get details
-			Movie movie = restTemplate.getForObject("http://localhost:8082/movies/".concat(rating.getMovieId()), Movie.class);	
+			Movie movie = restTemplate.getForObject("http://".concat(EUREKA_MOVIE_INFO_NAME).concat("/movies/").concat(rating.getMovieId()), Movie.class);	
 			
 			//put them all together
 			return new CatalogItem(movie.getName(), "Description of the movie", rating.getRating());
