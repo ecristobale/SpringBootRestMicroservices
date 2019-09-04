@@ -39,7 +39,7 @@ public class MovieCatalogResource {
 			Movie movie = restTemplate.getForObject("http://".concat(EUREKA_MOVIE_INFO_NAME).concat("/movies/").concat(rating.getMovieId()), Movie.class);	
 			
 			//put them all together
-			return new CatalogItem(movie.getName(), "Description of the movie", rating.getRating());
+			return new CatalogItem(movie.getName(), movie.getOverview(), rating.getRating());
 		})
 		.collect(Collectors.toList()));
 		return catalogItemWrapper;
