@@ -11,6 +11,7 @@ import com.ecristobale.moviecatalogservice.models.Rating;
 import com.ecristobale.moviecatalogservice.models.UserRating;
 import com.ecristobale.moviecatalogservice.resources.MovieCatalogResource;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 @Service
 public class UserRatingInfo {
@@ -18,7 +19,13 @@ public class UserRatingInfo {
 	@Autowired
 	RestTemplate restTemplate;
 
-	@HystrixCommand(fallbackMethod="getFallbackUserRating")
+	@HystrixCommand(fallbackMethod="getFallbackUserRating",
+			commandProperties = {
+					@HystrixProperty(name ="execution.isolation.thread.timeoutInMilliseconds", value="2000"),
+					@HystrixProperty(name ="circuitBreaker.requestVolumeThreshold", value="5"),
+					@HystrixProperty(name ="circuitBreaker.errorThresholdPercentage", value="50"),
+					@HystrixProperty(name ="circuitBreaker.sleepWindowInMilliseconds", value="5000")
+			})
 	public UserRating getUserRating(@PathVariable("userId") String userId) {
 		return restTemplate.getForObject(MovieCatalogResource.HTTP.concat(MovieCatalogResource.EUREKA_RATINGS_NAME).concat("/ratingsdata/users/").concat(userId), UserRating.class);
 	}
